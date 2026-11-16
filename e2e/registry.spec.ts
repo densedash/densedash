@@ -124,7 +124,7 @@ export function App() { return <Keymap.Provider><Consumer /></Keymap.Provider>; 
                 "@densedash/tree",
                 "--yes",
               ]
-            : ["--yes", "dlx", "shadcn@4.23.0", "add", "@densedash/tree", "--yes"],
+            : ["dlx", "shadcn@4.23.0", "add", "@densedash/tree", "--yes"],
         );
 
         await testInfo.attach("shadcn-install", {

@@ -1,6 +1,7 @@
 export * as Densedash from "./densedash.js";
 export * as Keymap from "./keymap/index.js";
 export * as Tabs from "./tabs/index.js";
+export * as Filter from "./filter/index.js";
 export * as Tree from "./tree/index.js";
 export * as List from "./list/index.js";
 export * as Table from "./table/index.js";

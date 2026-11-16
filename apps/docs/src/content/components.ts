@@ -146,6 +146,51 @@ export const components = {
       ["Panel", "div · tabs-panel", "data-selected, data-value; hidden when inactive"],
     ],
   },
+  filter: {
+    title: "Filter",
+    description:
+      "Searchable filters with cascading popups, multiple selected values, editable chips, and precise keyboard and focus behavior.",
+    unreleased: true,
+    types:
+      "Filter.Root infers field ids from items. A field defines id, label and options; a group defines id, label and nested items. Field/group ids must be unique throughout the root, and option value ids within a field. Value<Id> contains field, values and operator (in or not-in). Pass value and onValueChange for controlled state, or defaultValue for internal state. onValueChange receives cancellable details; details.cancel() preserves selection and keeps an applying popup open. The application owns query evaluation: this example ORs values within a field and ANDs fields. Trigger opens the stack; Chips edits values/operators and removes filters; Popup renders every level. Options support disabled, icon and count. Popup's renderOption customizes contents and emptyLabel customizes empty search text. Parts support render, refs and className/style state callbacks. Popup callbacks apply to each level; its ref/id belong to the first. Use a Densedash.Provider (the docs-only Frame supplies it here) and a browser supporting the Popover API. Popups inherit theme and density and use the native top layer to escape clipping. The standalone playground's outer layout is not part of the component.",
+    parts: [
+      ["Root", "div · filter", "data-open, data-count; owns selection and the popup stack"],
+      ["Trigger", "button · filter-trigger", "data-open, data-count; aria-expanded, aria-controls"],
+      ["Chips", "div · filter-chips", "data-count; editable field/operator/value chips"],
+      ["Popup", "div · filter-popup", "data-depth, data-active; popover=manual; one per layer"],
+      [
+        "Search",
+        "div · filter-search; input · no slot",
+        "role=combobox, aria-controls, aria-activedescendant",
+      ],
+      [
+        "Options",
+        "div · filter-options / filter-option",
+        "listbox / option; aria-selected, data-highlighted, data-disabled",
+      ],
+      [
+        "Chip internals",
+        "div · filter-chip; span · filter-chip-field; buttons · filter-chip-operator / filter-chip-value / filter-remove",
+        "filter-clear removes all values",
+      ],
+    ],
+    keyboard: [
+      [
+        "F",
+        "Opens this example. Opt in with keys: { label, preset: { 'filter.open': ['F'] } }; omit keys to avoid a page-wide binding.",
+      ],
+      ["↑ / ↓", "Move through enabled options and wrap at either end."],
+      ["→", "Enter the highlighted category and focus its search."],
+      ["←", "Return one layer when search is empty; preserve the parent's search and cursor."],
+      ["Space", "Toggle a value and keep picking. With nonempty search, inserts a normal space."],
+      ["Enter", "Toggle the highlighted value, close all layers, and return focus to the opener."],
+      ["Escape", "Close all layers and restore the opener without undoing selections."],
+      [
+        "Tab / Shift+Tab",
+        "Cycle between search and the active option. Outside clicks dismiss and retain their own focus.",
+      ],
+    ],
+  },
   footer: {
     title: "Footer",
     description:

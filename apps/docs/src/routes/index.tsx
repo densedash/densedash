@@ -78,12 +78,12 @@ function Overview() {
       </section>
 
       <section data-slot="docs-section">
-        <h2>Nine items. One model.</h2>
+        <h2>Components and customization</h2>
         <div data-slot="registry-grid">
           {componentNames.map((name) => (
             <a key={name} href={`/${name}`}>
               <strong>{components[name].title}</strong>
-              <span>@densedash/{name}</span>
+              <span>{"unreleased" in components[name] ? "Unreleased" : `@densedash/${name}`}</span>
             </a>
           ))}
         </div>
