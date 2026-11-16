@@ -2,14 +2,8 @@ import { expect, test } from "@playwright/test";
 import type { Locator } from "@playwright/test";
 
 async function expectInViewport(option: Locator) {
-  expect(
-    await option.evaluate((element) => {
-      const viewport = element.closest('[data-slot="filter-options"]')!;
-      const row = element.getBoundingClientRect();
-      const box = viewport.getBoundingClientRect();
-      return row.top >= box.top - 1 && row.bottom <= box.bottom + 1;
-    }),
-  ).toBe(true);
+  // Observe the browser's intersection update after virtual scroll reconciliation.
+  await expect(option).toBeInViewport({ ratio: 1 });
 }
 
 test("virtual filter search and nested menus preserve distant keyboard targets, checkboxes and focus", async ({
