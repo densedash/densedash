@@ -1,4 +1,12 @@
-import { useContext, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import type { ReactElement, ReactNode } from "react";
 import { useKernelFor } from "../context.js";
 import { ScopeContext } from "../scope-context.js";
@@ -44,9 +52,9 @@ function Stack({ menu, ...props }: PopupProps & { menu: OpenMenu }): ReactElemen
   const [focusedDepth, setFocusedDepth] = useState(0);
   const [, layout] = useState(0);
   const root = useRef<HTMLDivElement>(null);
-  const latestClose = useRef(context.close);
+  const latest = useRef(context);
   useLayoutEffect(() => {
-    latestClose.current = context.close;
+    latest.current = context;
   });
   useLayoutEffect(
     () =>
@@ -67,7 +75,7 @@ function Stack({ menu, ...props }: PopupProps & { menu: OpenMenu }): ReactElemen
         !root.current?.contains(target) &&
         !menu.anchor.contains(target)
       )
-        latestClose.current(false);
+        latest.current.close(false);
     };
     const reposition = () => layout((version) => version + 1);
     document.addEventListener("pointerdown", dismiss);
@@ -82,80 +90,97 @@ function Stack({ menu, ...props }: PopupProps & { menu: OpenMenu }): ReactElemen
     };
   }, [menu.anchor]);
 
-  function update({
-    depth,
-    search,
-    active,
-  }: {
-    depth: number;
-    search: string;
-    active: string | null;
-  }) {
-    setLayers((current) =>
-      current
-        .slice(0, depth + 1)
-        .map((layer, index) => (index === depth ? { ...layer, search, active } : layer)),
-    );
-  }
-  function enter({
-    depth,
-    item,
-    element,
-    focus,
-    selectFirst,
-  }: {
-    depth: number;
-    item: MenuItem;
-    element: HTMLElement;
-    focus: boolean;
-    selectFirst: boolean;
-  }) {
-    if (item.kind !== "branch" || item.disabled) return;
-    setLayers((current) => {
-      if (JSON.stringify(current[depth + 1]?.page) === JSON.stringify(item.page)) return current;
-      return [
-        ...current.slice(0, depth + 1),
-        { page: item.page, anchor: element, search: "", active: null },
-      ];
-    });
-    if (focus) setFocusedDepth(depth + 1);
-    // Panel selects the first enabled row on activation; Right leaves search without a cursor.
-    if (selectFirst)
+  const update = useCallback(
+    ({ depth, search, active }: { depth: number; search: string; active: string | null }) => {
       setLayers((current) =>
-        current.map((layer, index) =>
-          index === depth + 1 ? { ...layer, active: firstItem(context.items, layer.page) } : layer,
-        ),
+        current
+          .slice(0, depth + 1)
+          .map((layer, index) => (index === depth ? { ...layer, search, active } : layer)),
       );
-  }
-  function activate({
-    depth,
-    item,
-    element,
-    close,
-    selectFirst,
-    event,
-  }: {
-    depth: number;
-    item: MenuItem;
-    element: HTMLElement;
-    close: boolean;
-    selectFirst: boolean;
-    event: Event;
-  }) {
-    if (item.disabled) return;
-    if (item.kind === "branch") return enter({ depth, item, element, focus: true, selectFirst });
-    const operatorField = menu.page.kind === "operator" ? menu.page.id : undefined;
-    const next =
-      item.kind === "operator" && operatorField !== undefined
-        ? context.value.map((entry) =>
-            entry.field === operatorField ? { ...entry, operator: item.id } : entry,
-          )
-        : item.kind === "value"
-          ? toggled({ value: context.value, field: item.field, option: item.value })
-          : context.value;
-    const changed = context.change(next, event.type === "keydown" ? "keyboard" : "pointer", event);
-    if (changed && (close || item.kind === "operator")) context.close(true);
-  }
+    },
+    [],
+  );
+  const enter = useCallback(
+    ({
+      depth,
+      item,
+      element,
+      focus,
+      selectFirst,
+    }: {
+      depth: number;
+      item: MenuItem;
+      element: HTMLElement;
+      focus: boolean;
+      selectFirst: boolean;
+    }) => {
+      if (item.kind !== "branch" || item.disabled) return;
+      setLayers((current) => {
+        if (JSON.stringify(current[depth + 1]?.page) === JSON.stringify(item.page)) return current;
+        return [
+          ...current.slice(0, depth + 1),
+          { page: item.page, anchor: element, search: "", active: null },
+        ];
+      });
+      if (focus) setFocusedDepth(depth + 1);
+      // Panel selects the first enabled row on activation; Right leaves search without a cursor.
+      if (selectFirst)
+        setLayers((current) =>
+          current.map((layer, index) =>
+            index === depth + 1
+              ? { ...layer, active: firstItem(latest.current.items, layer.page) }
+              : layer,
+          ),
+        );
+    },
+    [],
+  );
+  const activate = useCallback(
+    ({
+      depth,
+      item,
+      element,
+      close,
+      selectFirst,
+      event,
+    }: {
+      depth: number;
+      item: MenuItem;
+      element: HTMLElement;
+      close: boolean;
+      selectFirst: boolean;
+      event: Event;
+    }) => {
+      if (item.disabled) return;
+      if (item.kind === "branch") return enter({ depth, item, element, focus: true, selectFirst });
+      const context = latest.current;
+      const operatorField = menu.page.kind === "operator" ? menu.page.id : undefined;
+      const next =
+        item.kind === "operator" && operatorField !== undefined
+          ? context.value.map((entry) =>
+              entry.field === operatorField ? { ...entry, operator: item.id } : entry,
+            )
+          : item.kind === "value"
+            ? toggled({ value: context.value, field: item.field, option: item.value })
+            : context.value;
+      const changed = context.change(
+        next,
+        event.type === "keydown" ? "keyboard" : "pointer",
+        event,
+      );
+      if (changed && (close || item.kind === "operator")) context.close(true);
+    },
+    [enter, menu.page],
+  );
+  const preview = useCallback(
+    (selection: { depth: number; item: MenuItem; element: HTMLElement }) =>
+      enter({ ...selection, focus: false, selectFirst: false }),
+    [enter],
+  );
+  const back = useCallback((depth: number) => {
+    setLayers((current) => current.slice(0, depth));
+    setFocusedDepth(depth - 1);
+  }, []);
   return (
     <div ref={root} data-slot="filter-stack">
       {layers.map((layer, depth) => (
@@ -167,16 +192,11 @@ function Stack({ menu, ...props }: PopupProps & { menu: OpenMenu }): ReactElemen
           layer={layer}
           depth={depth}
           active={depth === focusedDepth}
-          onLayerFocus={() => setFocusedDepth(depth)}
-          onLayerChange={(change) => update({ depth, ...change })}
-          onPreview={(item, element) =>
-            enter({ depth, item, element, focus: false, selectFirst: false })
-          }
-          onActivate={(selection) => activate({ depth, ...selection })}
-          onBack={() => {
-            setLayers((current) => current.slice(0, depth));
-            setFocusedDepth(depth - 1);
-          }}
+          onLayerFocus={setFocusedDepth}
+          onLayerChange={update}
+          onPreview={preview}
+          onActivate={activate}
+          onBack={back}
         />
       ))}
     </div>

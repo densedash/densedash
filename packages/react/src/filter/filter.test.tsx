@@ -116,8 +116,43 @@ test("controlled selections stay at the consumer value until new props arrive", 
   await key(" ");
   expect(requests).toEqual([[{ field: "stage", values: ["todo"], operator: "in" }]]);
   expect(container.querySelector('[data-slot="filter-chip"]')).toBeNull();
-  await render(<Example value={requests[0]!} />);
+  await render(<Example value={requests[0]!} onValueChange={(value) => requests.push(value)} />);
   expect(get({ container, selector: '[data-slot="filter-chip-value"]' }).textContent).toBe("Todo");
+  await key("ArrowDown");
+  await key(" ");
+  expect(requests[1]).toEqual([{ field: "stage", values: ["todo", "progress"], operator: "in" }]);
+});
+
+test("an open popup reflects replaced definitions and option rendering without losing input focus", async () => {
+  const updated = [
+    {
+      type: "field" as const,
+      id: "stage",
+      label: "Stage",
+      options: [{ value: "todo", label: "Ready" }],
+    },
+  ];
+  const example = (fields: readonly Filter.Item[], prefix: string) => (
+    <Filter.Root items={fields}>
+      <Filter.Trigger />
+      <Filter.Popup
+        render={(props) => (prefix === "Updated" ? <section {...props} /> : <div {...props} />)}
+        renderOption={({ item }) => `${prefix}: ${item.label}`}
+      />
+    </Filter.Root>
+  );
+  const { container, render } = await mount(example(items, "First"));
+  await enterValues(container);
+  await render(example(updated, "First"));
+  expect(document.activeElement?.getAttribute("aria-label")).toBe("Search Stage");
+  expect(get({ container, selector: '[data-depth="2"] [role="option"]' }).textContent).toBe(
+    "First: Ready",
+  );
+  await render(example(updated, "Updated"));
+  expect(get({ container, selector: '[data-depth="2"] [role="option"]' }).textContent).toBe(
+    "Updated: Ready",
+  );
+  expect(document.activeElement?.getAttribute("aria-label")).toBe("Search Stage");
 });
 
 test("canceling a change preserves selection and leaves the popup open", async () => {

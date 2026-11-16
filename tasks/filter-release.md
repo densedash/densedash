@@ -1,6 +1,6 @@
 # Reusable Filter and docs deployment
 
-Size: one Filter component family with a documentation consumer, about 1,500 production lines. The standalone playground and its lockfile entry remain local. The pnpm registry command correction unblocks the required deployment gate.
+Size: one Filter component family with a documentation consumer, about 1,500 production lines. The standalone playground and its lockfile entry remain local. The pnpm registry command correction unblocks the required deployment gate. The requested performance pass stays within this component family.
 
 ## Contract
 
@@ -14,3 +14,10 @@ Size: one Filter component family with a documentation consumer, about 1,500 pro
 8. Threat model: typed configuration and repository fixtures are trusted; DOM input is escaped by React. GitHub/Vercel are authenticated deployment boundaries. Never expose credentials or alter audiences.
 9. Invariants/resources: Filter owns selection/menu/focus; Frame owns its kernel; source and preview share one file; GitHub owns CI, Vercel owns deployment. Verify the exact PR head before deployment.
 10. Non-goals: npm publication, registry expansion, standalone playground publication, unrelated refactors, access-setting changes, or bypassing failed checks. Preserve the user's draft/ready policy.
+
+## Performance acceptance
+
+- Measure open, cursor navigation, search, and selection against stable fixtures at ordinary and stress sizes. Keep the benchmark/profile in temporary storage and report workload, production/development mode, timings, and limits on the PR.
+- Remove measured redundant scans, allocations, or layout work while preserving selection, disabled items, search, custom rendering, and focus behavior. Validate with public API tests and the existing real-browser flow.
+- Keep configuration/value updates observable when consumer props change. No new dependencies, global caches, timers, or delayed keyboard interaction. Do not adopt virtualization or a new state/ownership model without measurement and a separate scope decision.
+- Synchronize sidebar navigation with the existing client-only Frame count, which proves browser initialization; verify the failing WebKit flow without sleeps, retries, or timeout increases.

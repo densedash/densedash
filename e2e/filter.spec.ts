@@ -4,6 +4,10 @@ test("filter docs render the reusable example, preserve popup focus, and show it
   page,
 }) => {
   await page.goto("/");
+  // Frame emits its count only after the browser kernel mounts and hydration completes.
+  await expect(
+    page.getByRole("group", { name: "Desks", exact: true }).locator('[data-slot="frame-count"]'),
+  ).toHaveText("9 rows");
   await page
     .getByRole("navigation", { name: "Documentation" })
     .getByRole("link", { name: "Filter", exact: true })
