@@ -1,5 +1,15 @@
 # @densedash/css
 
+## 0.3.0
+
+### Minor Changes
+
+- [#68](https://github.com/densedash/densedash/pull/68) [`703a19d`](https://github.com/densedash/densedash/commit/703a19d84ffe65a6e3f7f6c464835a1e38a2075c) Thanks [@AnthonyAltieri](https://github.com/AnthonyAltieri)! - Add reusable Filter.Root, Trigger, Chips, and Popup parts with consumer-defined fields and nested groups, controlled or uncontrolled selections, searchable cascading popups, keyboard multiselect, and focus restoration. Optional filter.css provides token-based styling.
+
+### Patch Changes
+
+- [#69](https://github.com/densedash/densedash/pull/69) [`e648e0b`](https://github.com/densedash/densedash/commit/e648e0b2ae45122f8e2fc48d66eef72fc7a86e9d) Thanks [@AnthonyAltieri](https://github.com/AnthonyAltieri)! - Virtualize long Filter menus with measured rows and pinned keyboard targets and popup anchors. Add a virtual opt-out and tuning options. Tighten default spacing, add squircle corners with rounded fallbacks, and use native checkbox inputs for value options.
+
 ## 0.2.0
 
 ### Minor Changes
