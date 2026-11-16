@@ -15,6 +15,8 @@ export interface Choice {
 interface Props {
   item: MenuItem;
   id: string;
+  index: number;
+  count: number;
   selected: boolean;
   highlighted: boolean;
   showContext: boolean;
@@ -22,12 +24,15 @@ interface Props {
   renderOption: PopupProps["renderOption"];
   onHover(hover: Hover): void;
   onChoose(choice: Choice): void;
+  start?: number | undefined;
 }
 
 // Stable menu entries and event callbacks let cursor moves update only the affected rows.
 export const Option = memo(function Option({
   item,
   id,
+  index,
+  count,
   selected,
   highlighted,
   showContext,
@@ -35,6 +40,7 @@ export const Option = memo(function Option({
   renderOption,
   onHover,
   onChoose,
+  start,
 }: Props) {
   return (
     <div
@@ -43,9 +49,23 @@ export const Option = memo(function Option({
         else options.delete(item.id);
       }}
       id={id}
+      data-index={index}
+      style={
+        start === undefined
+          ? undefined
+          : {
+              position: "absolute",
+              insetBlockStart: 0,
+              insetInlineStart: 0,
+              inlineSize: "100%",
+              transform: `translateY(${start}px)`,
+            }
+      }
       data-slot="filter-option"
       role="option"
       aria-selected={selected}
+      aria-posinset={index + 1}
+      aria-setsize={count}
       aria-disabled={item.disabled || undefined}
       data-highlighted={highlighted || undefined}
       data-disabled={item.disabled || undefined}
@@ -65,9 +85,26 @@ export const Option = memo(function Option({
         renderOption({ item, selected, highlighted })
       ) : (
         <>
-          <span data-slot="filter-option-icon" aria-hidden="true">
-            {selected ? "✓" : item.kind === "operator" ? "" : item.icon}
-          </span>
+          {item.kind === "value" ? (
+            <input
+              data-slot="filter-checkbox"
+              type="checkbox"
+              checked={selected}
+              disabled={item.disabled}
+              readOnly
+              tabIndex={-1}
+              aria-hidden="true"
+            />
+          ) : (
+            <span data-slot="filter-option-icon" aria-hidden="true">
+              {item.kind === "operator" ? (selected ? "✓" : "") : item.icon}
+            </span>
+          )}
+          {item.kind === "value" && item.icon && (
+            <span data-slot="filter-option-icon" aria-hidden="true">
+              {item.icon}
+            </span>
+          )}
           <span data-slot="filter-option-label">
             {item.label}
             {item.kind === "value" && showContext && <small>{item.context}</small>}

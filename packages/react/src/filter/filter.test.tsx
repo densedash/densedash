@@ -90,6 +90,7 @@ test("Space accumulates enabled values across nested popups; Enter applies and r
   expect(container.querySelectorAll('[data-slot="filter-popup"]')).toHaveLength(3);
   const list = get({ container, selector: '[data-slot="filter-popup"][data-depth="2"]' });
   expect(list.querySelectorAll('[aria-selected="true"]')).toHaveLength(2);
+  expect(list.querySelectorAll('input[type="checkbox"]:checked')).toHaveLength(2);
   expect(get({ container, selector: '[data-slot="filter-chip-value"]' }).textContent).toBe(
     "Todo, In Progress",
   );
@@ -104,6 +105,21 @@ test("Space accumulates enabled values across nested popups; Enter applies and r
     "In Progress",
   );
   expect(document.activeElement).toBe(get({ container, selector: '[data-slot="filter-trigger"]' }));
+});
+
+test("clicking a native checkbox toggles exactly once and preserves search focus", async () => {
+  const changes: (readonly Filter.Value[])[] = [];
+  const { container } = await mount(<Example onValueChange={(value) => changes.push(value)} />);
+  await enterValues(container);
+  const checkbox = get({ container, selector: '[data-depth="2"] input[type="checkbox"]' });
+  await click(checkbox);
+  expect(changes).toEqual([[{ field: "stage", values: ["todo"], operator: "in" }]]);
+  expect((checkbox as HTMLInputElement).checked).toBe(true);
+  expect(document.activeElement?.getAttribute("aria-label")).toBe("Search Stage");
+  await click(checkbox);
+  expect(changes[1]).toEqual([]);
+  expect((checkbox as HTMLInputElement).checked).toBe(false);
+  expect(container.querySelectorAll('[data-slot="filter-popup"]')).toHaveLength(3);
 });
 
 test("controlled selections stay at the consumer value until new props arrive", async () => {

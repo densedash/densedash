@@ -18,7 +18,8 @@ test("filter docs render the reusable example, preserve popup focus, and show it
     0,
   );
 
-  const frame = page.locator('[data-variant="filter"]');
+  const frame = page.getByRole("group", { name: "Component library", exact: true });
+  const preview = page.getByRole("region", { name: "filter example", exact: true });
   const count = frame.locator('[data-slot="frame-count"]');
   await expect(count).toHaveText("6 of 6 issues");
   const trigger = frame.getByRole("button", { name: "Filter F", exact: true });
@@ -50,9 +51,9 @@ test("filter docs render the reusable example, preserve popup focus, and show it
   await page.keyboard.press("Escape");
   await expect(trigger).toBeFocused();
 
-  await page.getByRole("tab", { name: "Code", exact: true }).click();
-  await expect(page.locator('[data-slot="source-code"]')).toContainText("<Filter.Root");
-  await expect(page.locator('[data-slot="source-code"]')).toContainText("<Filter.Popup");
+  await preview.getByRole("tab", { name: "Code", exact: true }).click();
+  await expect(preview.locator('[data-slot="source-code"]')).toContainText("<Filter.Root");
+  await expect(preview.locator('[data-slot="source-code"]')).toContainText("<Filter.Popup");
   await expect(
     page
       .getByRole("table", { name: "CSS variables", exact: true })
@@ -64,12 +65,13 @@ test("the opener shortcut ignores a hidden preview and resumes when the preview 
   page,
 }) => {
   await page.goto("/filter");
-  const frame = page.locator('[data-variant="filter"]');
+  const frame = page.getByRole("group", { name: "Component library", exact: true });
+  const preview = page.getByRole("region", { name: "filter example", exact: true });
   await expect(frame.locator('[data-slot="frame-count"]')).toHaveText("6 of 6 issues");
-  await page.getByRole("tab", { name: "Code", exact: true }).click();
+  await preview.getByRole("tab", { name: "Code", exact: true }).click();
   await page.keyboard.press("f");
   await expect(frame.locator('[data-slot="filter-popup"]')).toHaveCount(0);
-  await page.getByRole("tab", { name: "Preview", exact: true }).click();
+  await preview.getByRole("tab", { name: "Preview", exact: true }).click();
   await page.keyboard.press("f");
   await expect(
     frame.getByRole("combobox", { name: "Search Add filter", exact: true }),
