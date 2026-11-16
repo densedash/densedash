@@ -59,6 +59,7 @@
   padding: var(--dd-docs-frame-padding);
   color: var(--dd-color-text-muted);
 }
-[data-variant="filter"] [data-slot="filter-popup"] {
-  inline-size: calc(var(--dd-unit) * 65);
+[data-variant="filter"] [data-slot="filter-demo-summary"] {
+  padding: var(--dd-docs-frame-padding);
+  color: var(--dd-color-text-muted);
 }

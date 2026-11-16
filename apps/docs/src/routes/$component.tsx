@@ -23,7 +23,7 @@ function ComponentPage() {
   const component = components[name];
   const shellKeys = "keys" in component ? component.keys : null;
   const widgetKeys = "keyboard" in component ? component.keyboard : null;
-  const unreleased = "unreleased" in component && component.unreleased;
+  const packageOnly = "packageOnly" in component && component.packageOnly;
   const examples = "examples" in component ? component.examples : [];
   const css = reference.css[name] ?? [];
   const keys = reference.keys.filter(({ command }) => {
@@ -44,20 +44,20 @@ function ComponentPage() {
         <p data-slot="lede">{component.description}</p>
       </section>
       <section data-slot="docs-section">
-        <h2>{unreleased ? "Usage preview" : "Install"}</h2>
+        <h2>Install</h2>
         <p data-slot="section-description">
-          {unreleased
-            ? "Unreleased: this live example uses the workspace package. Filter will be available in the next package release; a registry install is not available yet."
+          {packageOnly
+            ? "Import Filter from @densedash/react and add its optional CSS; a registry install is not available yet."
             : "Configure the namespace on the overview, then add the item. CSS and dependencies install together."}
         </p>
         <pre data-slot="install-command">
           <code>
-            {unreleased
+            {packageOnly
               ? 'import { Filter } from "@densedash/react";\nimport "@densedash/css/components/filter.css";'
               : `pnpm dlx shadcn@4.23.0 add @densedash/${name}`}
           </code>
         </pre>
-        {!unreleased && (
+        {!packageOnly && (
           <p data-slot="footnote">
             <a data-slot="text-link" href={`/r/${name}.json`}>
               Inspect registry JSON ↗
@@ -114,12 +114,29 @@ function ComponentPage() {
         <section key={example.name} data-slot="docs-section">
           <h2>{example.title}</h2>
           <p data-slot="section-description">{example.description}</p>
-          <ComponentPreview name={example.name} />
+          <ComponentPreview
+            name={example.name}
+            defaultLayout={name === "filter" ? "tabs" : "split"}
+          />
         </section>
       ))}
       <section data-slot="docs-section">
         <h2>Types and composition</h2>
         <p data-slot="section-description">{component.types}</p>
+        {name === "filter" && (
+          <p data-slot="section-description">
+            Lists with more than 100 options are virtualized automatically. Pass{" "}
+            <code>{"virtual={false}"}</code> to Popup to mount every option, or tune it with
+            virtual=
+            {"{{ overscan, estimateSize, measure }}"}. Rows are measured by default, including
+            custom content that wraps. Keep item definitions and renderOption stable when they have
+            not changed. Active options remain mounted for aria-activedescendant and child popup
+            anchors. Native checkboxes mirror the selected state while each option owns keyboard
+            focus. With custom headless styles, keep the options list bounded and scrollable. The
+            optional CSS uses compact rows and squircle corners, with rounded corners as a browser
+            fallback.
+          </p>
+        )}
         {(name === "tree" || name === "list" || name === "table") && (
           <p data-slot="section-description">
             For large collections, pass virtual to Viewport and give it a bounded height: it mounts

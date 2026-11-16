@@ -7,6 +7,7 @@ import type { MenuItem } from "./context.js";
 import type { Layer, PopupProps } from "./popup.js";
 import { Option } from "./option.js";
 import type { Choice, Hover } from "./option.js";
+import { useOptionWindow } from "./use-option-window.js";
 
 interface Props extends PopupProps {
   layer: Layer;
@@ -36,6 +37,7 @@ export function Panel({
   onBack,
   renderOption,
   emptyLabel = "No matching options",
+  virtual = true,
   render,
   ref,
   className,
@@ -46,6 +48,8 @@ export function Panel({
   const popup = useRef<HTMLElement | null>(null);
   const focusedPopup = useRef<HTMLElement | null>(null);
   const input = useRef<HTMLInputElement>(null);
+  const viewport = useRef<HTMLDivElement>(null);
+  const keepOptionFocus = useRef(false);
   const options = useRef(new Map<string, HTMLDivElement>());
   const items = useMemo(
     () => menuItems({ items: context.items, page: layer.page, search: layer.search }),
@@ -63,6 +67,13 @@ export function Panel({
   }, [context.value]);
   const activeIndex = items.findIndex((item) => !item.disabled && item.id === layer.active);
   const activeItem = items[activeIndex];
+  const optionWindow = useOptionWindow({
+    items,
+    pinned: activeIndex < 0 ? items.findIndex((item) => !item.disabled) : activeIndex,
+    active,
+    viewport,
+    virtual,
+  });
   const operatorField = layer.page.kind === "operator" ? layer.page.id : undefined;
   const label = pageLabel({ items: context.items, page: layer.page });
   const listId = `${context.id}-list-${depth}`;
@@ -74,6 +85,9 @@ export function Panel({
   const hover = useCallback(
     ({ item, element, highlighted }: Hover) => {
       if (!highlighted) {
+        keepOptionFocus.current =
+          popup.current?.contains(popup.current.ownerDocument.activeElement) === true &&
+          popup.current.ownerDocument.activeElement?.getAttribute("role") === "option";
         onLayerFocus(depth);
         change({ search: layer.search, active: item.id });
       }
@@ -98,7 +112,15 @@ export function Panel({
     const view = element.ownerDocument.defaultView;
     if (!view) return;
     element.style.maxWidth = `${Math.max(0, view.innerWidth - 24)}px`;
-    element.style.maxHeight = `${Math.max(0, view.innerHeight - 24)}px`;
+    const availableHeight = Math.max(0, view.innerHeight - 24);
+    element.style.maxHeight = `min(var(--dd-filter-max-height, ${availableHeight}px), ${availableHeight}px)`;
+    // Popover contents have no box until shown. Bind and measure only after entering the top layer.
+    if (optionWindow) {
+      optionWindow.instance._willUpdate();
+      optionWindow.instance.measureElement(null);
+      if (optionWindow.measure)
+        for (const option of options.current.values()) optionWindow.instance.measureElement(option);
+    }
     const rect = layer.anchor.getBoundingClientRect();
     const width = element.offsetWidth || 260;
     const height = element.offsetHeight || 300;
@@ -116,7 +138,12 @@ export function Panel({
     element.style.position = "fixed";
     element.style.margin = "0";
     element.style.left = `${Math.max(12, Math.min(preferredLeft, view.innerWidth - width - 12))}px`;
-    const preferredTop = depth === 0 ? rect.bottom + 8 : rect.top - 49;
+    const searchHeight =
+      element.querySelector('[data-slot="filter-search"]')?.getBoundingClientRect().height ?? 36;
+    const inset = viewport.current
+      ? Number.parseFloat(view.getComputedStyle(viewport.current).paddingBlockStart) || 0
+      : 0;
+    const preferredTop = depth === 0 ? rect.bottom + 8 : rect.top - searchHeight - inset;
     element.style.top = `${Math.max(12, Math.min(preferredTop, view.innerHeight - height - 12))}px`;
   });
   useLayoutEffect(() => {
@@ -125,15 +152,20 @@ export function Panel({
     focusedPopup.current = active ? popup.current : null;
   });
   useLayoutEffect(() => {
+    if (!active || !activeItem) return;
     const element = popup.current;
-    const option = activeItem && options.current.get(activeItem.id);
-    option?.scrollIntoView?.({ block: "nearest" });
+    if (optionWindow)
+      optionWindow.instance.scrollToIndex(activeIndex, { align: "auto", behavior: "instant" });
+    const option = options.current.get(activeItem.id);
+    if (!optionWindow) option?.scrollIntoView?.({ block: "nearest" });
     if (
-      element?.ownerDocument.activeElement?.getAttribute("role") === "option" &&
-      element.contains(element.ownerDocument.activeElement)
+      keepOptionFocus.current ||
+      (element?.ownerDocument.activeElement?.getAttribute("role") === "option" &&
+        element.contains(element.ownerDocument.activeElement))
     )
-      option?.focus();
-  }, [activeItem?.id]);
+      option?.focus({ preventScroll: true });
+    keepOptionFocus.current = false;
+  }, [activeItem?.id, activeIndex, active, items, optionWindow?.instance]);
 
   function choose({
     close,
@@ -165,6 +197,7 @@ export function Panel({
       ((event.key === "Home" || event.key === "End") && !layer.search)
     ) {
       stop();
+      keepOptionFocus.current = event.target !== input.current;
       const index = enabled.findIndex((item) => item.id === activeItem?.id);
       const next =
         event.key === "Home"
@@ -198,9 +231,13 @@ export function Panel({
       stop();
       if (event.target === input.current && enabled.length) {
         const item = activeItem ?? enabled[0]!;
+        keepOptionFocus.current = true;
         change({ search: layer.search, active: item.id });
         options.current.get(item.id)?.focus();
-      } else input.current?.focus();
+      } else {
+        keepOptionFocus.current = false;
+        input.current?.focus();
+      }
       return;
     }
     if (event.target !== input.current && (event.key.length === 1 || event.key === "Backspace")) {
@@ -212,6 +249,37 @@ export function Panel({
       input.current?.focus();
     }
   }
+  const mounted = optionWindow
+    ? optionWindow.instance.getVirtualItems().map((row) => ({ index: row.index, start: row.start }))
+    : items.map((_, index) => ({ index, start: undefined }));
+  const rows = mounted.map(({ index, start }) => {
+    const item = items[index]!;
+    const selected =
+      item.kind === "value"
+        ? selectedValues.get(item.field)?.has(item.value) === true
+        : item.kind === "operator" &&
+          layer.page.kind === "operator" &&
+          context.value.some(
+            (entry) => entry.field === operatorField && entry.operator === item.id,
+          );
+    return (
+      <Option
+        key={item.id}
+        item={item}
+        id={optionId(index)}
+        index={index}
+        count={items.length}
+        selected={selected}
+        highlighted={activeIndex === index}
+        showContext={layer.page.kind === "root"}
+        options={options.current}
+        renderOption={renderOption}
+        onHover={hover}
+        onChoose={chooseOption}
+        start={start}
+      />
+    );
+  });
   const children = (
     <>
       <div data-slot="filter-search">
@@ -236,7 +304,10 @@ export function Panel({
           aria-activedescendant={activeItem ? optionId(activeIndex) : undefined}
           value={layer.search}
           placeholder={depth === 0 ? "Add filter…" : `Filter ${label.toLowerCase()}…`}
-          onFocus={() => onLayerFocus(depth)}
+          onFocus={() => {
+            keepOptionFocus.current = false;
+            onLayerFocus(depth);
+          }}
           onChange={(event) => {
             const search = event.target.value;
             const matches = menuItems({ items: context.items, page: layer.page, search });
@@ -247,6 +318,7 @@ export function Panel({
         />
       </div>
       <div
+        ref={viewport}
         data-slot="filter-options"
         id={listId}
         role="listbox"
@@ -254,30 +326,16 @@ export function Panel({
         aria-multiselectable={items.some((item) => item.kind === "value") || undefined}
       >
         {items.length === 0 && <div data-slot="filter-empty">{emptyLabel}</div>}
-        {items.map((item, index) => {
-          const selected =
-            item.kind === "value"
-              ? selectedValues.get(item.field)?.has(item.value) === true
-              : item.kind === "operator" &&
-                layer.page.kind === "operator" &&
-                context.value.some(
-                  (entry) => entry.field === operatorField && entry.operator === item.id,
-                );
-          return (
-            <Option
-              key={item.id}
-              item={item}
-              id={optionId(index)}
-              selected={selected}
-              highlighted={activeIndex === index}
-              showContext={layer.page.kind === "root"}
-              options={options.current}
-              renderOption={renderOption}
-              onHover={hover}
-              onChoose={chooseOption}
-            />
-          );
-        })}
+        {optionWindow ? (
+          <div
+            data-slot="filter-window"
+            style={{ position: "relative", blockSize: optionWindow.instance.getTotalSize() }}
+          >
+            {rows}
+          </div>
+        ) : (
+          rows
+        )}
       </div>
       <div data-slot="filter-hint">
         {items.some((item) => item.kind === "value")

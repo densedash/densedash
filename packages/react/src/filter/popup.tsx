@@ -15,6 +15,7 @@ import type { PartProps } from "../use-render.js";
 import { menuItems, toggled, useFilterContext } from "./context.js";
 import type { Item, MenuItem, OpenMenu, Page } from "./context.js";
 import { Panel } from "./panel.js";
+import type { VirtualOptions } from "../virtual/tanstack-virtual.js";
 
 export interface PopupState {
   readonly depth: number;
@@ -28,6 +29,8 @@ export interface PopupProps extends ElementAttributes<HTMLDivElement>, PartProps
     highlighted: boolean;
   }) => ReactNode;
   readonly emptyLabel?: string;
+  /** Lists over 100 options are windowed by default. False mounts all; options tune TanStack Virtual. */
+  readonly virtual?: boolean | VirtualOptions;
 }
 export interface Layer {
   page: Page;

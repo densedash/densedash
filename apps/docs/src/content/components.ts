@@ -150,7 +150,15 @@ export const components = {
     title: "Filter",
     description:
       "Searchable filters with cascading popups, multiple selected values, editable chips, and precise keyboard and focus behavior.",
-    unreleased: true,
+    packageOnly: true,
+    examples: [
+      {
+        name: "filter-virtual",
+        title: "Large option lists",
+        description:
+          "Long lists mount only visible rows and the highlighted option. Search, wrap to distant results, select with the keyboard, and open nested team menus without mounting the whole list.",
+      },
+    ],
     types:
       "Filter.Root infers field ids from items. A field defines id, label and options; a group defines id, label and nested items. Field/group ids must be unique throughout the root, and option value ids within a field. Value<Id> contains field, values and operator (in or not-in). Pass value and onValueChange for controlled state, or defaultValue for internal state. onValueChange receives cancellable details; details.cancel() preserves selection and keeps an applying popup open. The application owns query evaluation: this example ORs values within a field and ANDs fields. Trigger opens the stack; Chips edits values/operators and removes filters; Popup renders every level. Options support disabled, icon and count. Popup's renderOption customizes contents and emptyLabel customizes empty search text. Parts support render, refs and className/style state callbacks. Popup callbacks apply to each level; its ref/id belong to the first. Use a Densedash.Provider (the docs-only Frame supplies it here) and a browser supporting the Popover API. Popups inherit theme and density and use the native top layer to escape clipping. The standalone playground's outer layout is not part of the component.",
     parts: [
@@ -166,7 +174,12 @@ export const components = {
       [
         "Options",
         "div · filter-options / filter-option",
-        "listbox / option; aria-selected, data-highlighted, data-disabled",
+        "listbox / option; aria-selected, aria-posinset, aria-setsize, data-highlighted, data-disabled; filter-window when virtualized",
+      ],
+      [
+        "Checkbox",
+        "input · filter-checkbox",
+        "native type=checkbox; checked mirrors the option; the option retains focus and aria-selected",
       ],
       [
         "Chip internals",
@@ -180,6 +193,7 @@ export const components = {
         "Opens this example. Opt in with keys: { label, preset: { 'filter.open': ['F'] } }; omit keys to avoid a page-wide binding.",
       ],
       ["↑ / ↓", "Move through enabled options and wrap at either end."],
+      ["Home / End", "Reach the first or last enabled option when search is empty."],
       ["→", "Enter the highlighted category and focus its search."],
       ["←", "Return one layer when search is empty; preserve the parent's search and cursor."],
       ["Space", "Toggle a value and keep picking. With nonempty search, inserts a normal space."],

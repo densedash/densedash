@@ -44,6 +44,12 @@
     --dd-kbd-padding-inline: 0.25rem;
     --dd-kbd-border-bottom-width: 2px;
     --dd-kbd-radius: 0.1875rem;
+    --dd-filter-width: 15rem;
+    --dd-filter-max-height: 20rem;
+    --dd-filter-radius: 0.75rem;
+    --dd-filter-option-radius: 0.375rem;
+    --dd-filter-shadow: 0 8px 24px color-mix(in srgb, var(--dd-base-neutral-950) 18%, transparent);
+    --dd-filter-checkmark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3.5 8 3 3 6-6.5'/%3E%3C/svg%3E");
     --dd-footer-height: 1.875rem;
     --dd-footer-gap: 0.875rem;
     --dd-footer-padding-inline: 1.25rem;
