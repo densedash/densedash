@@ -122,6 +122,15 @@ signatures. `keymap.tsx` adds a browser-only Provider that owns and disposes one
 kernel; keep its `keys` object stable. Apps with an existing kernel can instead
 use `Densedash.Provider` from the package.
 
+The `/filter` page previews the reusable Filter exported by the workspace package.
+Its thin `ui/filter.tsx` wrapper loads canonical CSS, and the docs-only Frame owns
+the preview kernel. The live issue list, searchable nested popups, and highlighted
+source come from `examples/filter.tsx`; the standalone playground remains a separate
+development example. Filter is labelled unreleased in the catalog and uses usage
+imports instead of a registry install command. Add its registry item and remove
+that label when the package version exporting Filter is published; the existing
+registry dependency pins do not yet contain it.
+
 Wrappers import their installed CSS through `./styles/*.css`. Vite resolves these
 imports to the canonical package CSS, while the registry embeds those same files
 at explicit `components/densedash/styles/*` targets. No parallel CSS copy lives

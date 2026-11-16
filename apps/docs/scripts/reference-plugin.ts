@@ -14,6 +14,7 @@ const styles = {
   list: ["tree"],
   table: ["table"],
   tabs: ["tabs", "kbd"],
+  filter: ["filter"],
   footer: ["footer", "kbd"],
   "app-shell": ["app-shell", "tree", "tabs", "footer", "kbd"],
 };

@@ -1,0 +1,64 @@
+/* Filter preview layout only. The reusable component's styles come from the package. */
+[data-variant="filter"] [data-slot="filter-demo-toolbar"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dd-cell-padding-inline);
+  padding: var(--dd-docs-frame-padding);
+  border-block-end: var(--dd-border-width) solid var(--dd-color-border-muted);
+}
+[data-variant="filter"] [data-slot="filter-demo-toolbar"] > span {
+  color: var(--dd-color-text-secondary);
+  font-weight: var(--dd-font-weight-medium);
+}
+[data-variant="filter"] [data-slot="filter-trigger"] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dd-cell-padding-inline);
+}
+[data-variant="filter"] [data-slot="filter-trigger"] kbd {
+  color: var(--dd-color-text-muted);
+  font: var(--dd-kbd-font-size) var(--dd-font-mono);
+}
+[data-variant="filter"] [data-slot="filter-chips"]:not([data-count="0"]) {
+  padding: var(--dd-docs-frame-padding);
+  border-block-end: var(--dd-border-width) solid var(--dd-color-border-muted);
+}
+[data-variant="filter"] [data-slot="filter-chip"] {
+  flex-wrap: wrap;
+  max-inline-size: var(--dd-full);
+}
+[data-variant="filter"] [data-slot="filter-demo-results"] {
+  min-block-size: calc(var(--dd-row-height) * 7);
+  overflow-x: auto;
+}
+[data-variant="filter"] table {
+  inline-size: var(--dd-full);
+  border-collapse: collapse;
+  text-align: start;
+  white-space: nowrap;
+}
+[data-variant="filter"] th,
+[data-variant="filter"] td {
+  block-size: var(--dd-row-height);
+  padding-inline: var(--dd-docs-frame-padding);
+  border-block-end: var(--dd-border-width) solid var(--dd-color-border-muted);
+  text-align: start;
+}
+[data-variant="filter"] th {
+  color: var(--dd-color-text-muted);
+  font-size: var(--dd-text-xs);
+  font-weight: var(--dd-font-weight-medium);
+}
+[data-variant="filter"] [data-slot="filter-demo-id"] {
+  margin-inline-end: var(--dd-cell-padding-inline);
+  color: var(--dd-color-text-muted);
+  font: var(--dd-text-xs) var(--dd-font-mono);
+}
+[data-variant="filter"] [data-slot="filter-demo-results"] > p {
+  padding: var(--dd-docs-frame-padding);
+  color: var(--dd-color-text-muted);
+}
+[data-variant="filter"] [data-slot="filter-popup"] {
+  inline-size: calc(var(--dd-unit) * 65);
+}

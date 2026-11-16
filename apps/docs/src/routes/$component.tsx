@@ -22,6 +22,8 @@ function ComponentPage() {
   const { name } = Route.useRouteContext();
   const component = components[name];
   const shellKeys = "keys" in component ? component.keys : null;
+  const widgetKeys = "keyboard" in component ? component.keyboard : null;
+  const unreleased = "unreleased" in component && component.unreleased;
   const examples = "examples" in component ? component.examples : [];
   const css = reference.css[name] ?? [];
   const keys = reference.keys.filter(({ command }) => {
@@ -42,19 +44,26 @@ function ComponentPage() {
         <p data-slot="lede">{component.description}</p>
       </section>
       <section data-slot="docs-section">
-        <h2>Install</h2>
+        <h2>{unreleased ? "Usage preview" : "Install"}</h2>
         <p data-slot="section-description">
-          Configure the namespace on the overview, then add the item. CSS and dependencies install
-          together.
+          {unreleased
+            ? "Unreleased: this live example uses the workspace package. Filter will be available in the next package release; a registry install is not available yet."
+            : "Configure the namespace on the overview, then add the item. CSS and dependencies install together."}
         </p>
         <pre data-slot="install-command">
-          <code>pnpm dlx shadcn@4.23.0 add @densedash/{name}</code>
+          <code>
+            {unreleased
+              ? 'import { Filter } from "@densedash/react";\nimport "@densedash/css/components/filter.css";'
+              : `pnpm dlx shadcn@4.23.0 add @densedash/${name}`}
+          </code>
         </pre>
-        <p data-slot="footnote">
-          <a data-slot="text-link" href={`/r/${name}.json`}>
-            Inspect registry JSON ↗
-          </a>
-        </p>
+        {!unreleased && (
+          <p data-slot="footnote">
+            <a data-slot="text-link" href={`/r/${name}.json`}>
+              Inspect registry JSON ↗
+            </a>
+          </p>
+        )}
       </section>
       <section data-slot="docs-section">
         <h2>Live example</h2>
@@ -75,6 +84,8 @@ function ComponentPage() {
               . A preset key can also be a sequence and a command can ask for confirmation;
               Keymap.ChordHint and Keymap.ConfirmPrompt show them.
             </>
+          ) : name === "filter" ? (
+            "Click Filter or press F, enter Status with the arrow keys, then use Space to pick several values and Enter to finish. Dates opens a third layer. The issue list updates immediately. Switch to Code to read the exact example using the reusable Filter parts."
           ) : name === "theme" ? (
             "Both lists use the same parts and stylesheet. Only the second wrapper sets variables; compare with the theme and density controls above."
           ) : name === "app-shell" ? (
@@ -85,7 +96,9 @@ function ComponentPage() {
         </p>
         <ComponentPreview
           name={name}
-          defaultLayout={name === "app-shell" || name === "table" ? "tabs" : "split"}
+          defaultLayout={
+            name === "app-shell" || name === "table" || name === "filter" ? "tabs" : "split"
+          }
         />
         <p data-slot="footnote">
           Frame and Cell are docs-only presentation helpers, not part of the registry; read{" "}
@@ -183,14 +196,36 @@ function ComponentPage() {
       <section data-slot="docs-section">
         <h2>Keyboard</h2>
         <p data-slot="section-description">
-          {shellKeys !== null
-            ? "The sidebar uses treePreset (j/k/l/h and u for parent); the list uses shiftedTreePreset (Shift+J/K/L/H and Shift+U for parent). Detail tabs use the kernel's tabs.select keys. Parent does nothing at the top level. Each layer answers throughout the page; typing in a text field keeps its letters. Parent is a secondary hint, available with all; this example filters secondary hints to keep its custom footer in one row. Swap a preset to rebind; the pane headers and the footer legend follow."
-            : name === "keymap"
-              ? "The example's own preset binds increase to N and decrease to P. Every preset also keeps the confirm and cancel keys from tradingPreset, listed below; they answer while a confirmation prompt is pending."
-              : keys.length === 0
-                ? "This item registers no commands. Kbd formats labels, Footer reads the live keymap, and the theme sets variables."
-                : "Generated from tradingPreset, formatted by the kernel's keyboard port at build time. Keys act within the focused scope. An empty key list leaves the command available programmatically. Change keys with one preset or per-command overrides."}
+          {widgetKeys !== null
+            ? "Popup navigation follows the widget's built-in keyboard behavior. The optional filter.open command uses the instance key layer; this example binds it to F. Opening a popup isolates background kernel commands until dismissal."
+            : shellKeys !== null
+              ? "The sidebar uses treePreset (j/k/l/h and u for parent); the list uses shiftedTreePreset (Shift+J/K/L/H and Shift+U for parent). Detail tabs use the kernel's tabs.select keys. Parent does nothing at the top level. Each layer answers throughout the page; typing in a text field keeps its letters. Parent is a secondary hint, available with all; this example filters secondary hints to keep its custom footer in one row. Swap a preset to rebind; the pane headers and the footer legend follow."
+              : name === "keymap"
+                ? "The example's own preset binds increase to N and decrease to P. Every preset also keeps the confirm and cancel keys from tradingPreset, listed below; they answer while a confirmation prompt is pending."
+                : keys.length === 0
+                  ? "This item registers no commands. Kbd formats labels, Footer reads the live keymap, and the theme sets variables."
+                  : "Generated from tradingPreset, formatted by the kernel's keyboard port at build time. Keys act within the focused scope. An empty key list leaves the command available programmatically. Change keys with one preset or per-command overrides."}
         </p>
+        {widgetKeys !== null && (
+          <div data-slot="reference-scroll">
+            <table data-slot="reference-table" aria-label="Keyboard">
+              <thead>
+                <tr>
+                  <th>Keys</th>
+                  <th>Behavior</th>
+                </tr>
+              </thead>
+              <tbody>
+                {widgetKeys.map(([hotkeys, behavior]) => (
+                  <tr key={hotkeys}>
+                    <th>{hotkeys}</th>
+                    <td>{behavior}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         {shellKeys !== null && (
           <div data-slot="reference-scroll">
             <table data-slot="reference-table" aria-label="Keyboard">

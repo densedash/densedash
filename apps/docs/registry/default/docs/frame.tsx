@@ -14,6 +14,7 @@ export type FrameVariant =
   | "nested-list"
   | "table"
   | "tabs"
+  | "filter"
   | "keymap"
   | "keymap-sequence"
   | "keymap-confirm"
