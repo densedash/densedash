@@ -115,12 +115,7 @@ export function Panel({
     const availableHeight = Math.max(0, view.innerHeight - 24);
     element.style.maxHeight = `min(var(--dd-filter-max-height, ${availableHeight}px), ${availableHeight}px)`;
     // Popover contents have no box until shown. Bind and measure only after entering the top layer.
-    if (optionWindow) {
-      optionWindow.instance._willUpdate();
-      optionWindow.instance.measureElement(null);
-      if (optionWindow.measure)
-        for (const option of options.current.values()) optionWindow.instance.measureElement(option);
-    }
+    optionWindow?.sync(options.current.values());
     const rect = layer.anchor.getBoundingClientRect();
     const width = element.offsetWidth || 260;
     const height = element.offsetHeight || 300;

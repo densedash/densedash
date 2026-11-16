@@ -1,5 +1,6 @@
 import { useLayoutEffect, useMemo, useReducer, useRef } from "react";
 import type { RefObject } from "react";
+import { flushSync } from "react-dom";
 import {
   Virtualizer,
   defaultRangeExtractor,
@@ -26,6 +27,7 @@ export function useOptionWindow({ items, pinned, active, viewport, virtual }: Op
   const measure = options?.measure !== false;
   const [, changed] = useReducer((version: number) => version + 1, 0);
   const rowHeight = useRef(28);
+  const committing = useRef(false);
   const latest = useRef({ pinned, active });
   useLayoutEffect(() => {
     latest.current = { pinned, active };
@@ -70,7 +72,12 @@ export function useOptionWindow({ items, pinned, active, viewport, virtual }: Op
             release?.();
           };
         },
-        onChange: () => changed(),
+        onChange(_instance, sync) {
+          // Scroll/resize corrections need their new sizer in the same frame. Layout
+          // synchronization already runs at commit priority and cannot flush recursively.
+          if (sync && !committing.current) flushSync(changed);
+          else changed();
+        },
       }),
     [measure, viewport],
   );
@@ -111,5 +118,15 @@ export function useOptionWindow({ items, pinned, active, viewport, virtual }: Op
     for (const key of instance.itemSizeCache.keys())
       if (!live.has(String(key))) instance.itemSizeCache.delete(key);
   }, [instance, items]);
-  return enabled ? { instance, measure } : null;
+  function sync(elements: Iterable<HTMLElement>) {
+    committing.current = true;
+    try {
+      instance._willUpdate();
+      instance.measureElement(null);
+      if (measure) for (const element of elements) instance.measureElement(element);
+    } finally {
+      committing.current = false;
+    }
+  }
+  return enabled ? { instance, sync } : null;
 }
