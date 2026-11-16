@@ -29,8 +29,10 @@ jobs:
         with:
           cache: true
       - run: pnpm install --frozen-lockfile
-      - name: Build, lint, typecheck and test
-        run: pnpm turbo run build lint typecheck test
+      - name: Build packages and examples
+        run: pnpm turbo run build
+      - name: Lint, typecheck and test
+        run: pnpm turbo run lint typecheck test
       - name: Validate package manifests and exports
         run: pnpm publint
       - name: Validate packed ESM types
