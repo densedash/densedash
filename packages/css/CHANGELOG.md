@@ -1,5 +1,11 @@
 # @densedash/css
 
+## 0.4.0
+
+### Minor Changes
+
+- [#71](https://github.com/densedash/densedash/pull/71) [`d736283`](https://github.com/densedash/densedash/commit/d736283d60ce2d29ce235cb1aa60f9682465cc56) Thanks [@AnthonyAltieri](https://github.com/AnthonyAltieri)! - Add a composable Sidebar with stationary collapse controls, a constant-height navigation underlay, synchronized covering/fade transitions, persistent text-only section headings, and recursive directory groups that remain accessible through popups in the condensed icon rail.
+
 ## 0.3.0
 
 ### Minor Changes
