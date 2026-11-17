@@ -7,6 +7,7 @@ export * as List from "./list/index.js";
 export * as Table from "./table/index.js";
 export * as Footer from "./footer.js";
 export * as AppShell from "./app-shell/index.js";
+export * as Sidebar from "./sidebar/index.js";
 export { useTree } from "./tree/handle.js";
 export type {
   TreeHandle,
