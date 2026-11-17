@@ -109,7 +109,7 @@ function RootDocument() {
           </div>
         </header>
         <div data-slot="site-layout">
-          <aside data-slot="sidebar">
+          <aside data-slot="docs-sidebar">
             <nav aria-label="Documentation">
               <p data-slot="nav-label">Getting started</p>
               <Link to="/" activeOptions={{ exact: true }} activeProps={{ "aria-current": "page" }}>

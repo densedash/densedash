@@ -1,0 +1,163 @@
+.sidebar-example {
+  --dd-font-size: 12px;
+  --dd-line-height: 20px;
+  --dd-sidebar-width: 238px;
+  --dd-sidebar-rail-width: 64px;
+  --dd-sidebar-row-height: 32px;
+  --dd-sidebar-icon-size: 16px;
+  --dd-sidebar-padding: 8px;
+  --dd-sidebar-section-height: 35px;
+  --dd-sidebar-section-font-size: 10px;
+  --dd-sidebar-section-compact-offset: -4px;
+  position: relative;
+  grid-template-rows: minmax(0, 1fr);
+  height: 520px;
+  padding: 8px;
+  border-radius: 12px;
+}
+.sidebar-example [data-slot="sidebar-toolbar"] {
+  position: absolute;
+  z-index: 3;
+  inset: 8px 8px auto;
+  block-size: 32px;
+  padding-inline: 8px;
+  pointer-events: none;
+}
+.sidebar-example [data-slot="sidebar-toolbar"] > * {
+  pointer-events: auto;
+}
+.sidebar-example [data-slot="sidebar-trigger"] {
+  inline-size: 32px;
+  background: var(--dd-color-surface);
+}
+.sidebar-example [data-slot="sidebar-demo-title"] {
+  position: absolute;
+  inset-inline-start: calc(var(--dd-sidebar-width) + 24px);
+  color: var(--dd-color-text-secondary);
+  white-space: nowrap;
+  transition: inset-inline-start var(--dd-sidebar-duration) var(--dd-sidebar-easing);
+}
+.sidebar-example[data-collapsed] [data-slot="sidebar-demo-title"] {
+  inset-inline-start: calc(var(--dd-sidebar-rail-width) + 24px);
+}
+.sidebar-example [data-slot="sidebar-demo-identity"] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 88px;
+  padding-block-start: 40px;
+  white-space: nowrap;
+}
+.sidebar-example [data-slot="sidebar-demo-avatar"] {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  height: 28px;
+  border-radius: 7px;
+  corner-shape: squircle;
+  background: var(--dd-color-selection-muted);
+  color: var(--dd-color-text);
+}
+.sidebar-example [data-slot="sidebar-demo-name"] {
+  opacity: 1;
+  translate: none;
+  visibility: visible;
+  transition:
+    opacity var(--dd-sidebar-duration) var(--dd-sidebar-easing),
+    translate var(--dd-sidebar-duration) var(--dd-sidebar-easing),
+    visibility 0ms;
+}
+.sidebar-example[data-collapsed] [data-slot="sidebar-demo-name"] {
+  opacity: 0;
+  translate: var(--dd-sidebar-fade-shift) 0;
+  visibility: hidden;
+  transition-delay: 0ms, 0ms, var(--dd-sidebar-duration);
+}
+.sidebar-example [data-slot="sidebar-item"],
+.sidebar-example [data-slot="sidebar-group-trigger"] {
+  margin-block-end: 2px;
+}
+.sidebar-example [data-slot="sidebar-footer"] {
+  padding-block-start: 12px;
+}
+.sidebar-example [data-slot="sidebar-content"] {
+  display: flex;
+  flex-direction: column;
+  overflow: clip;
+  padding-block-start: 48px;
+}
+.sidebar-example [data-slot="sidebar-demo-page-heading"] {
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: 12px;
+  padding: 12px 24px 20px;
+}
+.sidebar-example svg {
+  inline-size: 16px;
+  block-size: 16px;
+  flex: none;
+}
+.sidebar-example h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+.sidebar-example [data-slot="sidebar-demo-page-heading"] p {
+  margin: 3px 0 0;
+  font-size: 11px;
+  color: var(--dd-color-text-muted);
+}
+.sidebar-example [data-slot="sidebar-demo-results"] {
+  min-block-size: 0;
+  flex: auto;
+  overflow: auto;
+  padding: 12px 24px;
+}
+.sidebar-example [data-slot="sidebar-demo-summary"] {
+  margin-block-end: 16px;
+  color: var(--dd-color-text-secondary);
+  font-size: 11px;
+}
+.sidebar-example table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+.sidebar-example th {
+  text-align: start;
+  color: var(--dd-color-text-muted);
+  font-weight: 400;
+}
+.sidebar-example th,
+.sidebar-example td {
+  border-block-end: 1px solid var(--dd-color-border-subtle);
+  padding: 10px 12px 10px 0;
+  font-size: 11px;
+}
+.sidebar-example td:first-child span {
+  display: block;
+  color: var(--dd-color-text-muted);
+  font-size: 10px;
+}
+.sidebar-example [data-slot="sidebar-demo-note"] {
+  max-width: 48ch;
+  margin: 28px 0 12px;
+  color: var(--dd-color-text-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.sidebar-example [data-slot="sidebar-demo-status"] {
+  flex: none;
+  border-block-start: 1px solid var(--dd-color-border-subtle);
+  padding: 8px 16px;
+  font-size: 10px;
+  color: var(--dd-color-text-muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-example [data-slot="sidebar-demo-title"],
+  .sidebar-example [data-slot="sidebar-demo-name"] {
+    transition-duration: 0ms;
+    transition-delay: 0ms;
+  }
+}

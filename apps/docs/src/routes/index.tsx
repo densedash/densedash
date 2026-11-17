@@ -80,12 +80,21 @@ function Overview() {
       <section data-slot="docs-section">
         <h2>Components and customization</h2>
         <div data-slot="registry-grid">
-          {componentNames.map((name) => (
-            <a key={name} href={`/${name}`}>
-              <strong>{components[name].title}</strong>
-              <span>{"unreleased" in components[name] ? "Unreleased" : `@densedash/${name}`}</span>
-            </a>
-          ))}
+          {componentNames.map((name) => {
+            const component = components[name];
+            const installName =
+              "packageOnly" in component && component.packageOnly
+                ? "@densedash/react"
+                : "unreleased" in component
+                  ? "Unreleased"
+                  : `@densedash/${name}`;
+            return (
+              <a key={name} href={`/${name}`}>
+                <strong>{component.title}</strong>
+                <span>{installName}</span>
+              </a>
+            );
+          })}
         </div>
       </section>
 

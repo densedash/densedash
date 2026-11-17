@@ -47,13 +47,13 @@ function ComponentPage() {
         <h2>Install</h2>
         <p data-slot="section-description">
           {packageOnly
-            ? "Import Filter from @densedash/react and add its optional CSS; a registry install is not available yet."
+            ? `Import ${component.title} from @densedash/react and add its optional CSS; a registry install is not available yet.`
             : "Configure the namespace on the overview, then add the item. CSS and dependencies install together."}
         </p>
         <pre data-slot="install-command">
           <code>
             {packageOnly
-              ? 'import { Filter } from "@densedash/react";\nimport "@densedash/css/components/filter.css";'
+              ? `import { ${component.title} } from "@densedash/react";\nimport "@densedash/css/tokens.css";\nimport "@densedash/css/components/${name}.css";`
               : `pnpm dlx shadcn@4.23.0 add @densedash/${name}`}
           </code>
         </pre>
@@ -84,6 +84,8 @@ function ComponentPage() {
               . A preset key can also be a sequence and a command can ask for confirmation;
               Keymap.ChordHint and Keymap.ConfirmPrompt show them.
             </>
+          ) : name === "sidebar" ? (
+            "Expand Projects → Platform → Issues, then collapse the navigation. The same directories open from the compact rail. The toggle stays stationary, section labels stay readable, and the page covers the navigation. Use the arrow keys, Enter, Space, and Escape to explore. Switch to Code to read the reusable Sidebar composition."
           ) : name === "filter" ? (
             "Click Filter or press F, enter Status with the arrow keys, then use Space to pick several values and Enter to finish. Dates opens a third layer. The issue list updates immediately. Switch to Code to read the exact example using the reusable Filter parts."
           ) : name === "theme" ? (
@@ -97,17 +99,25 @@ function ComponentPage() {
         <ComponentPreview
           name={name}
           defaultLayout={
-            name === "app-shell" || name === "table" || name === "filter" ? "tabs" : "split"
+            name === "app-shell" || name === "table" || name === "filter" || name === "sidebar"
+              ? "tabs"
+              : "split"
           }
         />
         <p data-slot="footnote">
-          Frame and Cell are docs-only presentation helpers, not part of the registry; read{" "}
-          <a
-            data-slot="text-link"
-            href="https://github.com/densedash/densedash/tree/main/apps/docs/registry/default/docs"
-          >
-            their source on GitHub ↗
-          </a>
+          {name === "sidebar"
+            ? "The example owns fixture data and the current destination. Sidebar owns collapse, directory popups, and focus behavior. "
+            : "Frame and Cell are docs-only presentation helpers, not part of the registry; read "}
+          {name !== "sidebar" && (
+            <>
+              <a
+                data-slot="text-link"
+                href="https://github.com/densedash/densedash/tree/main/apps/docs/registry/default/docs"
+              >
+                their source on GitHub ↗
+              </a>
+            </>
+          )}
         </p>
       </section>
       {examples.map((example) => (
@@ -214,7 +224,9 @@ function ComponentPage() {
         <h2>Keyboard</h2>
         <p data-slot="section-description">
           {widgetKeys !== null
-            ? "Popup navigation follows the widget's built-in keyboard behavior. The optional filter.open command uses the instance key layer; this example binds it to F. Opening a popup isolates background kernel commands until dismissal."
+            ? "keyboardDescription" in component
+              ? component.keyboardDescription
+              : "Popup navigation follows the widget's built-in keyboard behavior. The optional filter.open command uses the instance key layer; this example binds it to F. Opening a popup isolates background kernel commands until dismissal."
             : shellKeys !== null
               ? "The sidebar uses treePreset (j/k/l/h and u for parent); the list uses shiftedTreePreset (Shift+J/K/L/H and Shift+U for parent). Detail tabs use the kernel's tabs.select keys. Parent does nothing at the top level. Each layer answers throughout the page; typing in a text field keeps its letters. Parent is a secondary hint, available with all; this example filters secondary hints to keep its custom footer in one row. Swap a preset to rebind; the pane headers and the footer legend follow."
               : name === "keymap"

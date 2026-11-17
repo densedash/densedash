@@ -28,7 +28,7 @@
   --dd-hairline: 1px;
   --dd-doc-radius: 3px;
   --dd-header-height: 64px;
-  --dd-sidebar-width: 208px;
+  --dd-docs-sidebar-width: 208px;
   --dd-page-padding: 48px;
   --dd-section-gap: 44px;
   --dd-doc-control-height: 30px;
@@ -189,9 +189,9 @@ h2 {
 }
 [data-slot="site-layout"] {
   display: grid;
-  grid-template-columns: var(--dd-sidebar-width) minmax(var(--dd-zero), var(--dd-main-column));
+  grid-template-columns: var(--dd-docs-sidebar-width) minmax(var(--dd-zero), var(--dd-main-column));
 }
-[data-slot="sidebar"] {
+[data-slot="docs-sidebar"] {
   border-right: var(--dd-hairline) solid var(--dd-border);
   padding: calc(var(--dd-unit) * 10) calc(var(--dd-unit) * 5);
   display: flex;
@@ -208,7 +208,7 @@ h2 {
   text-transform: uppercase;
   letter-spacing: var(--dd-label-tracking);
 }
-[data-slot="sidebar"] nav a {
+[data-slot="docs-sidebar"] nav a {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -218,13 +218,13 @@ h2 {
   color: var(--dd-muted);
   font-size: var(--dd-text-sm);
 }
-[data-slot="sidebar"] nav a[aria-current],
-[data-slot="sidebar"] nav a:hover {
+[data-slot="docs-sidebar"] nav a[aria-current],
+[data-slot="docs-sidebar"] nav a:hover {
   background: var(--dd-accent-soft);
   color: var(--dd-accent);
   border-radius: var(--dd-doc-radius);
 }
-[data-slot="sidebar"] nav a span {
+[data-slot="docs-sidebar"] nav a span {
   font: var(--dd-text-xs)/var(--dd-leading) var(--dd-doc-font-mono);
 }
 [data-slot="sidebar-note"] {
@@ -485,7 +485,7 @@ main {
 
 @media (max-width: 1000px) {
   :root {
-    --dd-sidebar-width: 172px;
+    --dd-docs-sidebar-width: 172px;
     --dd-page-padding: 28px;
   }
   [data-slot="component-preview"] {
@@ -519,17 +519,17 @@ main {
   [data-slot="site-layout"] {
     display: block;
   }
-  [data-slot="sidebar"] {
+  [data-slot="docs-sidebar"] {
     border-right: none;
     border-bottom: var(--dd-hairline) solid var(--dd-border);
     padding: calc(var(--dd-unit) * 2) var(--dd-page-padding);
   }
-  [data-slot="sidebar"] nav {
+  [data-slot="docs-sidebar"] nav {
     display: flex;
     flex-wrap: wrap;
     gap: calc(var(--dd-unit) * 2);
   }
-  [data-slot="sidebar"] nav a {
+  [data-slot="docs-sidebar"] nav a {
     gap: calc(var(--dd-unit) * 3);
   }
   [data-slot="nav-label"],
@@ -583,7 +583,7 @@ main {
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
-    minmax(min(var(--dd-full), var(--dd-sidebar-width)), var(--dd-main-column))
+    minmax(min(var(--dd-full), var(--dd-docs-sidebar-width)), var(--dd-main-column))
   );
   gap: calc(var(--dd-unit) * 3);
   margin-top: calc(var(--dd-unit) * 4);
