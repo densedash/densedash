@@ -14,7 +14,9 @@ import "../../../../packages/css/src/components/keymap-chord-hint.css";
 import "../../../../packages/css/src/components/keymap-confirm-prompt.css";
 import "../../../../packages/css/src/components/table.css";
 import "../../../../packages/css/src/components/filter.css";
+import "@densedash/css/components/sidebar.css";
 // The docs-only Frame and Cell helpers that examples are drawn inside.
 import "../../registry/default/docs/frame.css";
 import "../../registry/default/docs/cell.css";
 import "../../registry/default/docs/filter.css";
+import "../../registry/default/docs/sidebar.css";

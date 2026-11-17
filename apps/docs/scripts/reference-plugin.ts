@@ -15,6 +15,7 @@ const styles = {
   table: ["table"],
   tabs: ["tabs", "kbd"],
   filter: ["filter"],
+  sidebar: ["sidebar"],
   footer: ["footer", "kbd"],
   "app-shell": ["app-shell", "tree", "tabs", "footer", "kbd"],
 };

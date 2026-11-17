@@ -146,6 +146,77 @@ export const components = {
       ["Panel", "div · tabs-panel", "data-selected, data-value; hidden when inactive"],
     ],
   },
+  sidebar: {
+    title: "Sidebar",
+    description:
+      "A stationary navigation underlay with a page that slides over it. Collapse to an icon rail while keeping section labels, directory state, keyboard navigation, and focus intact.",
+    packageOnly: true,
+    types:
+      "Give Root a bounded height. Compose Toolbar and its stationary Trigger outside Viewport, then place Nav and Content inside Viewport. The example overlays Toolbar at the sheet's top edge with equal 8px sheet insets. Root owns collapse, each Group owns directory expansion, and the application owns the current destination and routing. Root supports collapsed/onCollapsedChange or defaultCollapsed; Group supports expanded/onExpandedChange or defaultExpanded. Both callbacks receive cancellable change details. Section labels remain text-only, with stable font metrics while sliding into the compact rail. Size the rail for full labels and side gutters; section-compact-offset can include an outer frame inset in their visible center. Compact buttons fit their icons. Directory children stay mounted, preserving nested state, and top-level groups use native popups in compact mode. Parts support render, refs, and className/style state callbacks. Item defaults to a button; render a link for real navigation. Content defaults to main; this embedded example renders a labelled section. A browser supporting the Popover API is required for compact directory popups. Squircle corners progressively enhance rounded corners, and CSS honors reduced motion.",
+    parts: [
+      ["Root", "div · sidebar", "data-collapsed; owns collapse and focus restoration"],
+      ["Toolbar", "div · sidebar-toolbar", "data-collapsed; stationary toggle container"],
+      [
+        "Trigger",
+        "button · sidebar-trigger",
+        "data-collapsed; aria-expanded, aria-controls; optional disabled",
+      ],
+      ["Viewport", "div · sidebar-viewport", "data-collapsed; fixed-height stage"],
+      ["Nav", "nav · sidebar-nav", "data-collapsed; required label; optional header and footer"],
+      ["Content", "main · sidebar-content", "data-collapsed; covering foreground surface"],
+      [
+        "Section",
+        "div · sidebar-section",
+        "role=group; required label; text-only heading and label slots",
+      ],
+      [
+        "Item",
+        "button · sidebar-item",
+        "data-collapsed, data-current, data-disabled; label, icon, aria-current",
+      ],
+      [
+        "Group",
+        "div · sidebar-group",
+        "data-expanded, data-rail, data-disabled; recursive directory",
+      ],
+      [
+        "Group trigger",
+        "button · sidebar-group-trigger",
+        "data-rail; aria-expanded, aria-controls; icon, label, chevron slots",
+      ],
+      [
+        "Group content",
+        "div · sidebar-group-content",
+        "role=group; data-rail, data-popup-open; native popover in compact mode",
+      ],
+    ],
+    keyboardDescription:
+      "Native buttons keep Tab, Enter, and Space behavior. Navigation keys act while a destination or directory has focus. Current destination and keyboard focus are independent. Closing a rail popup or selecting its descendant restores the directory trigger. Collapsing while focus is in the navigation restores the stationary toggle.",
+    keyboard: [
+      [
+        "↑ / ↓",
+        "Move through visible destinations and directories, skipping disabled items and wrapping at the ends.",
+      ],
+      [
+        "Home / End",
+        "Focus the first or last visible item in the current navigation or rail popup.",
+      ],
+      [
+        "→",
+        "Expand a directory or enter its first child. A compact directory opens its popup and focuses its first child.",
+      ],
+      ["←", "Close an expanded inline directory, move to its parent, or dismiss the rail popup."],
+      [
+        "Enter / Space",
+        "Activate a destination or toggle a directory. Space also activates a custom link destination.",
+      ],
+      ["Escape", "Dismiss the rail popup and restore its trigger."],
+      [
+        "Tab / Shift+Tab",
+        "Follow native focus order. The collapse control remains in its stationary toolbar.",
+      ],
+    ],
+  },
   filter: {
     title: "Filter",
     description:
