@@ -138,6 +138,46 @@ const components = {
   "--dd-app-shell-tab-gap": "1.125rem",
   /** Stacking order of sticky parts, such as the table header, above contained rows. */
   "--dd-z-sticky": "1",
+  /** Sidebar: stationary toolbar and underlay, with a foreground that covers the navigation. */
+  "--dd-sidebar-width": "14.5rem",
+  "--dd-sidebar-rail-width": "4.5rem",
+  "--dd-sidebar-toolbar-height": "3.5rem",
+  "--dd-sidebar-radius": "1rem",
+  "--dd-sidebar-row-radius": "0.375rem",
+  "--dd-sidebar-row-height": "2rem",
+  "--dd-sidebar-icon-size": "1rem",
+  "--dd-sidebar-icon-color": "currentColor",
+  "--dd-sidebar-padding": "0.5rem",
+  "--dd-sidebar-label-gap": "0.625rem",
+  "--dd-sidebar-indent": "0.875rem",
+  "--dd-sidebar-duration": "360ms",
+  "--dd-sidebar-easing": "cubic-bezier(0.22, 0.8, 0.25, 1)",
+  "--dd-sidebar-reduced-duration": "0ms",
+  "--dd-sidebar-full-size": "100%",
+  "--dd-sidebar-fill": "1fr",
+  "--dd-sidebar-empty-fill": "0fr",
+  "--dd-sidebar-opacity": "1",
+  "--dd-sidebar-fade-shift": "-0.25rem",
+  "--dd-sidebar-section-height": "2.5rem",
+  "--dd-sidebar-section-gap": "0.75rem",
+  "--dd-sidebar-section-font-size": "0.6875rem",
+  "--dd-sidebar-section-compact-offset": "0px",
+  "--dd-sidebar-section-half-size": "50%",
+  "--dd-sidebar-section-center": "0.5",
+  "--dd-sidebar-section-outset": "-1",
+  "--dd-sidebar-focus-offset": "-2px",
+  "--dd-sidebar-shadow":
+    "-12px 0 30px -20px color-mix(in srgb, var(--dd-base-neutral-950) 55%, transparent)",
+  "--dd-sidebar-chevron": "var(--dd-app-shell-chevron)",
+  "--dd-sidebar-chevron-rotation": "90deg",
+  "--dd-sidebar-trigger-icon":
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Cpath d='M8 3v18'/%3E%3C/svg%3E\")",
+  "--dd-sidebar-popup-width": "15rem",
+  "--dd-sidebar-popup-inset": "24px",
+  "--dd-sidebar-popup-max-height": "26rem",
+  "--dd-sidebar-viewport-height": "100svh",
+  "--dd-sidebar-popup-shadow":
+    "0 12px 36px color-mix(in srgb, var(--dd-base-neutral-950) 30%, transparent)",
 } as const satisfies Record<`--dd-${string}`, string>;
 
 type Length = `${number}${"rem" | "px"}`;
