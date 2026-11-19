@@ -199,10 +199,14 @@ pnpm dlx shadcn@4.23.0 add @densedash/tree
 
 ## Theme, density, and workspace checks
 
-The document's `<html>` owns `data-theme="light|dark"` and
-`data-dd-density="compact|comfortable"`. Defaults are light and compact.
-The header controls update React state and those attributes; preferences last
-for the current page session. CSS responds directly to the attributes.
+The theme defaults to System and follows the machine's color scheme through CSS
+media queries, including before JavaScript loads and when the preference changes.
+The header's theme select offers System, Light, and Dark. Explicit choices set
+`data-theme="light|dark"` on `<html>`; System removes the override. The existing
+palettes apply to the docs, code highlighting, helpers, and component previews.
+Density defaults to compact and uses `data-dd-density="compact|comfortable"`.
+Header choices last for the current page session; a full reload returns the theme
+to System. There is no theme storage, startup script, or media-query listener.
 
 The app extends the shared strict TypeScript config without relaxing it.
 Root TypeScript also checks the app. The generated route tree is committed
