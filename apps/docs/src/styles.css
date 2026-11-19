@@ -90,6 +90,28 @@
   --dd-code-token-function: #9fcbd0;
 }
 
+/* Let the browser choose the initial palette before hydration, as tokens.css does. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --dd-bg: #171b16;
+    --dd-surface: #1e241d;
+    --dd-muted-surface: #272e24;
+    --dd-fg: #e2e8da;
+    --dd-muted: #a2ad97;
+    --dd-border: #384132;
+    --dd-accent: #b2cc8e;
+    --dd-accent-soft: #2c3921;
+    --dd-focus: #efac8d;
+    --dd-code-token-constant: #e1b38e;
+    --dd-code-token-string: #b0cb88;
+    --dd-code-token-comment: #929f85;
+    --dd-code-token-keyword: #dbac9d;
+    --dd-code-token-parameter: #d4bc8b;
+    --dd-code-token-function: #9fcbd0;
+  }
+}
+
 [data-dd-density="comfortable"] {
   --dd-doc-control-height: 38px;
   --dd-doc-row-height: 56px;
@@ -121,12 +143,13 @@ button {
   cursor: pointer;
 }
 [data-slot="preferences"] button,
+[data-slot="preferences"] select,
 [data-slot="preview-toolbar"] button {
   font: inherit;
   color: inherit;
 }
 /* The site's ring, for the docs chrome only: parts inside a preview draw their own. */
-:is(button, a):not([data-slot="preview-stage"] *):focus-visible,
+:is(button, a, select):not([data-slot="preview-stage"] *):focus-visible,
 [data-slot="type-token"]:focus-visible {
   outline: var(--dd-hairline) solid var(--dd-focus);
   outline-offset: var(--dd-unit);
@@ -174,14 +197,19 @@ h2 {
   gap: calc(var(--dd-unit) * 2);
   font-size: var(--dd-text-sm);
 }
-[data-slot="preferences"] button {
+[data-slot="theme-preference"] {
+  display: flex;
+  align-items: center;
+  gap: var(--dd-unit);
+}
+[data-slot="preferences"] :is(button, select) {
   min-height: var(--dd-doc-control-height);
   padding: var(--dd-unit) calc(var(--dd-unit) * 2);
   background: var(--dd-surface);
   border: var(--dd-hairline) solid var(--dd-border);
   border-radius: var(--dd-doc-radius);
 }
-[data-slot="preferences"] button:hover {
+[data-slot="preferences"] :is(button, select):hover {
   background: var(--dd-accent-soft);
 }
 [data-slot="preferences"] a {
@@ -829,6 +857,28 @@ main {
   --dd-docs-warning-surface: var(--dd-base-amber-950);
   /* The subtle border is the dark surface's own colour, so row dividers step up one. */
   --dd-docs-row-divider: var(--dd-color-border-muted);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --dd-docs-frame-shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 8px 24px rgb(0 0 0 / 40%);
+    --dd-docs-positive-surface: #052e16;
+    --dd-docs-negative-surface: #450a0a;
+    --dd-docs-accent-surface: var(--dd-base-blue-950);
+    --dd-docs-neutral-surface: var(--dd-base-neutral-800);
+    --dd-docs-hint-surface: var(--dd-base-neutral-800);
+    --dd-docs-hint-border: var(--dd-base-neutral-700);
+    --dd-docs-hint-key-surface: var(--dd-base-neutral-900);
+    --dd-docs-hint-key-border: var(--dd-base-neutral-600);
+    --dd-docs-hint-shadow: 0 8px 24px rgb(0 0 0 / 50%);
+    --dd-docs-prompt-border: var(--dd-base-amber-700);
+    --dd-docs-prompt-confirm-surface: var(--dd-base-neutral-100);
+    --dd-docs-prompt-confirm-text: var(--dd-base-neutral-900);
+    --dd-docs-prompt-confirm-key-surface: var(--dd-base-neutral-0);
+    --dd-docs-prompt-confirm-key-border: var(--dd-base-neutral-400);
+    --dd-docs-warning-surface: var(--dd-base-amber-950);
+    --dd-docs-row-divider: var(--dd-color-border-muted);
+  }
 }
 
 /* The list page's frames (rules in registry/default/docs/frame.css). Values from the List board. */

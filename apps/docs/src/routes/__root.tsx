@@ -68,11 +68,11 @@ export const Route = createRootRoute({
 });
 
 function RootDocument() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<"system" | "light" | "dark">("system");
   const [density, setDensity] = useState<"compact" | "comfortable">("compact");
 
   return (
-    <html lang="en" data-theme={theme} data-dd-density={density}>
+    <html lang="en" data-theme={theme === "system" ? undefined : theme} data-dd-density={density}>
       <head>
         <HeadContent />
       </head>
@@ -89,14 +89,21 @@ function RootDocument() {
             <span data-slot="brand-caption">docs</span>
           </a>
           <div data-slot="preferences">
-            <button
-              type="button"
-              aria-label="Toggle dark theme"
-              aria-pressed={theme === "dark"}
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            >
-              Theme: {theme === "light" ? "Light" : "Dark"}
-            </button>
+            <label data-slot="theme-preference">
+              Theme:
+              <select
+                aria-label="Theme"
+                value={theme}
+                onChange={(event) => {
+                  const value = event.currentTarget.value;
+                  if (value === "system" || value === "light" || value === "dark") setTheme(value);
+                }}
+              >
+                <option value="system">System</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </label>
             <button
               type="button"
               aria-label="Toggle comfortable density"
